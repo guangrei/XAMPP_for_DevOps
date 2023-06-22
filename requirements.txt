@@ -1,0 +1,6 @@
+requests
+anybinding
+ftputil
+beautifulsoup4
+autopep8
+flake8
