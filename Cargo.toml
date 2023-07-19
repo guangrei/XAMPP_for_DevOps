@@ -1,0 +1,13 @@
+[package]
+name = "xampp"
+version = "0.1.0"
+authors = ["guangrei <myawn@pm.me>"]
+
+[dependencies]
+pos = "0.1"
+rustc-serialize = "0.3"
+toml = "0.1"
+utm = "0.1"
+
+[profile.test]
+opt-level = 2
