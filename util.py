@@ -1,4 +1,4 @@
-#-*-coding:utf8;-*-
+# -*-coding:utf8;-*-
 from bs4 import BeautifulSoup
 import re
 
@@ -73,49 +73,56 @@ CMD ["lampp", "start"]
 """
 dockerfile = dockerfile.strip()
 
+
 def remove_html_tags(text):
-	clean = re.compile('<.*?>')
-	return re.sub(clean, '', text)
+    clean = re.compile('<.*?>')
+    return re.sub(clean, '', text)
+
 
 def normalize_key(k):
-	if k.strip() == "":
-		return "download"
-	return k.lower().strip()
+    if k.strip() == "":
+        return "download"
+    return k.lower().strip()
+
 
 def normalize_value(k, v):
-	if k.lower() == "checksum":
-		ret = {}
-		r = re.findall('title=\"(.*)\"', str(v))
-		ret["md5"] = r[0]
-		ret["sha1"] = r[1]
-		return ret
-	elif k.strip() == "":
-		r = v.find("a",{"class":"button"}).get("href")
-		return r+"?from_af=true"
-	else:
-		return remove_html_tags(str(v)).strip()
+    if k.lower() == "checksum":
+        ret = {}
+        r = re.findall('title=\"(.*)\"', str(v))
+        ret["md5"] = r[0]
+        ret["sha1"] = r[1]
+        return ret
+    elif k.strip() == "":
+        r = v.find("a", {"class": "button"}).get("href")
+        return r+"?from_af=true"
+    else:
+        return remove_html_tags(str(v)).strip()
+
 
 def parse_data(html):
-	out = []
-	html = f"<html>{html}</html>"
-	soup = BeautifulSoup(html, 'html.parser')
-	table = soup.find('table')
-	headers = [header.text for header in table.find_all('th')]
-	results = [{headers[i]: cell for i, cell in enumerate(row.find_all('td'))} for row in table.find_all('tr')]
-	for array in results:
-		res = {}
-		for k, v in array.items():
-			res[normalize_key(k)] = normalize_value(k, v)
-		out.append(res)
-	return list(filter(None, out))
+    out = []
+    html = f"<html>{html}</html>"
+    soup = BeautifulSoup(html, 'html.parser')
+    table = soup.find('table')
+    headers = [header.text for header in table.find_all('th')]
+    results = [{headers[i]: cell for i, cell in enumerate(
+        row.find_all('td'))} for row in table.find_all('tr')]
+    for array in results:
+        res = {}
+        for k, v in array.items():
+            res[normalize_key(k)] = normalize_value(k, v)
+        out.append(res)
+    return list(filter(None, out))
+
 
 def parse_version(version):
-	release = version.split("/")[0].strip()
-	v = release.split(".")
-	tag = v[0]+"."+v[1]
-	version = int(v[0]+v[1])
-	return version, release, tag.strip()
+    release = version.split("/")[0].strip()
+    v = release.split(".")
+    tag = v[0]+"."+v[1]
+    version = int(v[0]+v[1])
+    return version, release, tag.strip()
+
 
 def write(file, data):
-	with open(file, "w") as f:
-		f.write(data)
+    with open(file, "w") as f:
+        f.write(data)
