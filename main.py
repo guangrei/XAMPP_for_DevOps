@@ -11,7 +11,7 @@ user = os.environ.get('DOCKERHUB_USER')
 password = os.environ.get('DOCKERHUB_PASSWORD')
 docker = Bind("docker", direct_output=True)
 container_image = "phpid/xampp"
-docker.login("-u", user, "-p", password)
+docker.login(username=user, password=password)
 # scrape xampp
 html_doc = requests.get("https://www.apachefriends.org/download.html").text
 soup = BeautifulSoup(html_doc, 'html.parser')
