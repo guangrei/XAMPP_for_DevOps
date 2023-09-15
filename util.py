@@ -56,12 +56,14 @@ RUN echo "source $NVM_DIR/nvm.sh && \
     nvm install $NODE_VERSION && \
     nvm alias default $NODE_VERSION && \
     nvm use default" | bash
-
+RUN curl -o get-pip.py https://bootstrap.pypa.io/get-pip.py && python3 get-pip.py && rm get-pip.py
+RUN echo 'alias python="python3"' >> $HOME/.bashrc
+COPY entrypoint.sh /opt/lampp/bin/entrypoint
+RUN chmod +x /opt/lampp/bin/entrypoint
 RUN apt-get clean
-
+RUN chown -R daemon /opt/lampp/phpmyadmin
 ENV XAMPP_ROOT /opt/lampp/htdocs/
-VOLUME [ "/var/log/mysql/", "/var/log/apache2/", "/opt/lampp/htdocs/" ]
-
+VOLUME ["/opt/lampp/htdocs/"]
 # MySQL
 EXPOSE 3306
 # web
@@ -69,10 +71,8 @@ EXPOSE 80
 # ftp
 EXPOSE 21
 WORKDIR /opt/lampp/htdocs/
-CMD ["lampp", "start"]
-"""
-dockerfile = dockerfile.strip()
-
+CMD ["entrypoint"]
+""".strip()
 
 def remove_html_tags(text):
     clean = re.compile('<.*?>')
